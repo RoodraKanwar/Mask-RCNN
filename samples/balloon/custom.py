@@ -88,8 +88,8 @@ class CustomDataset(utils.Dataset):
         subset: Subset to load: train or val
         """
         # Add classes according to the numbe of classes required to detect
-        self.add_class("custom", 1, "Dent")
-        self.add_class("custom",2,"Scratch")
+        self.add_class("object", 1, "Dent")
+        self.add_class("object",2,"Scratch")
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
@@ -124,18 +124,20 @@ class CustomDataset(utils.Dataset):
             # the outline of each object instance. These are stores in the
             # shape_attributes (see json format above)
             # The if condition is needed to support VIA versions 1.x and 2.x.
-            polygons = [r['shape_attributes'] for r in a['regions'].values()]
+            polygons = [r['shape_attributes'] for r in a['regions']]
             #labelling each class in the given image to a number
 
-            custom = [s['region_attributes'] for s in a['regions'].values()]
+            objects = [s['region_attributes'] for s in a['regions']]
             
             num_ids=[]
             #Add the classes according to the requirement
-            for n in custom:
+            for n in objects:
+              print(one)
+              print(n)
                 try:
-                    if n['label']=='Dent':
+                    if n['object']=='Dent':
                         num_ids.append(1)
-                    elif n['label']=='Scratch':
+                    elif n['object']=='Scratch':
                         num_ids.append(2)
                 except:
                     pass
@@ -148,7 +150,7 @@ class CustomDataset(utils.Dataset):
             height, width = image.shape[:2]
 
             self.add_image(
-                "custom",
+                "object",
                 image_id=a['filename'],  # use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
