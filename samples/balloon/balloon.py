@@ -168,12 +168,12 @@ class BalloonDataset(utils.Dataset):
         image_info = self.image_info[image_id]
         if image_info["source"] != "balloon":
             return super(self.__class__, self).load_mask(image_id)
-        num_ids = info['num_ids']
+        num_ids = image_info['num_ids']	
 
 
         # Convert polygons to a bitmap mask of shape
         # [height, width, instance_count]
-        #info = self.image_info[image_id]
+        info = self.image_info[image_id]
         mask = np.zeros([info["height"], info["width"], len(info["polygons"])],
                         dtype=np.uint8)
         for i, p in enumerate(info["polygons"]):
@@ -183,7 +183,7 @@ class BalloonDataset(utils.Dataset):
 
         # Return mask, and array of class IDs of each instance. Since we have
         # one class ID only, we return an array of 1s
-        #num_ids = np.array(num_ids, dtype=np.int32)
+        num_ids = np.array(num_ids, dtype=np.int32)	
         return mask, num_ids
 
     def image_reference(self, image_id):
