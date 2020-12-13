@@ -1261,8 +1261,9 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
     # Note that some boxes might be all zeros if the corresponding mask got cropped out.
     # and here is to filter them out
     _idx = np.sum(mask, axis=(0, 1)) > 0
+    _idx_ = np.ones(len(class_ids)).astype(np.bool)
     mask = mask[:, :, _idx]
-    class_ids = class_ids[_idx[0]]
+    class_ids = class_ids[_idx_]
     # Bounding boxes. Note that some boxes might be all zeros
     # if the corresponding mask got cropped out.
     # bbox: [num_instances, (y1, x1, y2, x2)]
