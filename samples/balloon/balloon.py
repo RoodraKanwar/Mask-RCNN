@@ -132,9 +132,9 @@ class BalloonDataset(utils.Dataset):
         	    #print(n)
         	    #print(type(n))
                 try:
-            	    if n['Dent']=='Dent':
+            	    if n['label']=='Dent':
             		    num_ids.append(1)
-            	    elif n['Scratch']=='Scratch':
+            	    elif n['label']=='Scratch':
             		    num_ids.append(2)
                 except:
                     pass
