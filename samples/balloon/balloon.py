@@ -130,16 +130,12 @@ class BalloonDataset(utils.Dataset):
             num_ids = []
             for n in objects:
                 try:
-            	    if n['object_name']=='Scratch':
-
-            		    num_ids.append(1)
-
-            	    elif n['object_name']=='Dent':
-
-            	        num_ids.append(2)
-            	        
-                except:
-            	    pass
+            	      if n['object_name']=='Scratch':
+            	          num_ids.append(1)
+            	      elif n['object_name']=='Dent':
+            	          num_ids.append(2)
+                 except:
+            	      pass
 
 
             # load_mask() needs the image size to convert polygons to masks.
