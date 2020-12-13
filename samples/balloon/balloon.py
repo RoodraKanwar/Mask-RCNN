@@ -4,6 +4,7 @@ Train on the toy Balloon dataset and implement color splash effect.
 Copyright (c) 2018 Matterport, Inc.
 Licensed under the MIT License (see LICENSE for details)
 Written by Waleed Abdulla
+Edited for general application by Soumya Yadav (Psoumyadav@gmail.com)
 ------------------------------------------------------------
 Usage: import the module (see Jupyter notebooks for examples), or run from
        the command line as such:
@@ -46,19 +47,19 @@ DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
 ############################################################
 
 
-class BalloonConfig(Config):
-    """Configuration for training on the toy  dataset.
+class CustomConfig(Config):
+    """Configuration for training on the custom dataset.
     Derives from the base Config class and overrides some values.
     """
     # Give the configuration a recognizable name
-    NAME = "balloon"
+    NAME = "custom"
 
     # We use a GPU with 12GB memory, which can fit two images.
     # Adjust down if you use a smaller GPU.
     IMAGES_PER_GPU = 2
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 2  # Background + classes
+    NUM_CLASSES = 1 + 2  # Background + number of classes (Here, 2)
 
     # Number of training steps per epoch
     STEPS_PER_EPOCH = 100
@@ -71,16 +72,16 @@ class BalloonConfig(Config):
 #  Dataset
 ############################################################
 
-class BalloonDataset(utils.Dataset):
+class CustomDataset(utils.Dataset):
 
-    def load_balloon(self, dataset_dir, subset):
-        """Load a subset of the Balloon dataset.
+    def load_custom(self, dataset_dir, subset):
+        """Load a subset of the custom dataset.
         dataset_dir: Root directory of the dataset.
         subset: Subset to load: train or val
         """
-        # Add classes. We have only one class to add.
-        self.add_class("balloon", 1, "Dent")
-        self.add_class("balloon", 2, "Scratch")
+        # Add classes according to the numbe of classes required to detect
+        self.add_class("custom", 1, "object1")
+        self.add_class("custom",2,"object2")
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
@@ -116,11 +117,20 @@ class BalloonDataset(utils.Dataset):
             # shape_attributes (see json format above)
             # The if condition is needed to support VIA versions 1.x and 2.x.
             polygons = [r['shape_attributes'] for r in a['regions'].values()]
-            objects = [s['region_attributes'] for s in a['regions'].values()]
+            #labelling each class in the given image to a number
 
-            num_ids = [int(n['balloon']) for n in objects]
+            custom = [s['region_attributes'] for s in a['regions'].values()]
             
-
+            num_ids=[]
+            #Add the classes according to the requirement
+            for n in custom:
+                try:
+                    if n['label']=='object1':
+                        num_ids.append(1)
+                    elif n['label']=='object2':
+                        num_ids.append(2)
+                except:
+                    pass
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
@@ -130,12 +140,12 @@ class BalloonDataset(utils.Dataset):
             height, width = image.shape[:2]
 
             self.add_image(
-                "balloon",
+                "custom",
                 image_id=a['filename'],  # use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
                 polygons=polygons,
-                num_ids = num_ids)
+                num_ids=num_ids)
 
     def load_mask(self, image_id):
         """Generate instance masks for an image.
@@ -144,16 +154,16 @@ class BalloonDataset(utils.Dataset):
             one mask per instance.
         class_ids: a 1D array of class IDs of the instance masks.
         """
-        # If not a balloon dataset image, delegate to parent class.
-        info = self.image_info[image_id]
-        if info["source"] != "balloon":
+        # If not a custom dataset image, delegate to parent class.
+        image_info = self.image_info[image_id]
+        if image_info["source"] != "custom":
             return super(self.__class__, self).load_mask(image_id)
-        num_ids = info['num_ids']
-
+        num_ids = image_info['num_ids']	
+        #print("Here is the numID",num_ids)
 
         # Convert polygons to a bitmap mask of shape
         # [height, width, instance_count]
-        #info = self.image_info[image_id]
+        info = self.image_info[image_id]
         mask = np.zeros([info["height"], info["width"], len(info["polygons"])],
                         dtype=np.uint8)
         for i, p in enumerate(info["polygons"]):
@@ -163,14 +173,13 @@ class BalloonDataset(utils.Dataset):
 
         # Return mask, and array of class IDs of each instance. Since we have
         # one class ID only, we return an array of 1s
-        num_ids = np.array(num_ids, dtype=np.int32)
-        return mask, num_ids
-
+        num_ids = np.array(num_ids, dtype=np.int32)	
+        return mask, num_ids#.astype(np.bool), np.ones([mask.shape[-1]], dtype=np.int32), 
 
     def image_reference(self, image_id):
         """Return the path of the image."""
         info = self.image_info[image_id]
-        if info["source"] == "balloon":
+        if info["source"] == "custom":
             return info["path"]
         else:
             super(self.__class__, self).image_reference(image_id)
@@ -179,13 +188,13 @@ class BalloonDataset(utils.Dataset):
 def train(model):
     """Train the model."""
     # Training dataset.
-    dataset_train = BalloonDataset()
-    dataset_train.load_balloon(args.dataset, "train")
+    dataset_train = CustomDataset()
+    dataset_train.load_custom(args.dataset, "train")
     dataset_train.prepare()
 
     # Validation dataset
-    dataset_val = BalloonDataset()
-    dataset_val.load_balloon(args.dataset, "val")
+    dataset_val = CustomDataset()
+    dataset_val.load_custom(args.dataset, "val")
     dataset_val.prepare()
 
     # *** This training schedule is an example. Update to your needs ***
@@ -279,13 +288,13 @@ if __name__ == '__main__':
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(
-        description='Train Mask R-CNN to detect balloons.')
+        description='Train Mask R-CNN to detect custom objects.')
     parser.add_argument("command",
                         metavar="<command>",
                         help="'train' or 'splash'")
     parser.add_argument('--dataset', required=False,
-                        metavar="/path/to/balloon/dataset/",
-                        help='Directory of the Balloon dataset')
+                        metavar="/path/to/custom/dataset/",
+                        help='Directory of the custom dataset')
     parser.add_argument('--weights', required=True,
                         metavar="/path/to/weights.h5",
                         help="Path to weights .h5 file or 'coco'")
@@ -314,9 +323,9 @@ if __name__ == '__main__':
 
     # Configurations
     if args.command == "train":
-        config = BalloonConfig()
+        config = CustomConfig()
     else:
-        class InferenceConfig(BalloonConfig):
+        class InferenceConfig(CustomConfig):
             # Set batch size to 1 since we'll be running inference on
             # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
             GPU_COUNT = 1
@@ -333,6 +342,10 @@ if __name__ == '__main__':
                                   model_dir=args.logs)
 
     # Select weights file to load
+    if args.weights.lower() == "new":	
+        print("weight path entered")	
+        print(NEW_WEIGHTS_PATH)	
+        weights_path = NEW_WEIGHTS_PATH
     if args.weights.lower() == "coco":
         weights_path = COCO_WEIGHTS_PATH
         # Download weights file
