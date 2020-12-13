@@ -130,8 +130,8 @@ class BalloonDataset(utils.Dataset):
             num_ids=[]
 
             for n in objects:
-        	    print one
-        	    print n
+        	    print(one)
+        	    print(n)
                 try:
             	    if n['balloon']=='Dent':
             		    num_ids.append(1)
