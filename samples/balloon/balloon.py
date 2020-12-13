@@ -124,27 +124,19 @@ class BalloonDataset(utils.Dataset):
             # the outline of each object instance. These are stores in the
             # shape_attributes (see json format above)
             # The if condition is needed to support VIA versions 1.x and 2.x.
-            polygons = [r['shape_attributes'] for r in a['regions']]
-            objects = [s['region_attributes'] for s in a['regions']]
-
-            num_ids=[]
-
-            for n in objects:
-        	    print(one)
-        	    print(n)
-                try:
-            	    if n['balloon']=='Dent':
-            		    num_ids.append(1)
-            	    elif n['balloon']=='Scratch':
-            		    num_ids.append(2)
-                except:
-                    pass
+            polygons = [r['shape_attributes'] for r in a['regions']] 
+            objects = [s['region_attributes']['name'] for s in a['regions']]
+            print("objects:",objects)
+            name_dict = {"Dent": 1,"Scratch": 2}
+            # key = tuple(name_dict)
+            num_ids = [name_dict[a] for a in objects]
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
             # the image. This is only managable since the dataset is tiny.
 
             #num_ids = [int(n['object_name']) for n in objects]
+            print("numids",num_ids)
             image_path = os.path.join(dataset_dir, a['filename'])
             image = skimage.io.imread(image_path)
             height, width = image.shape[:2]
