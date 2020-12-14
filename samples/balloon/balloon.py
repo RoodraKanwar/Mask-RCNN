@@ -126,6 +126,8 @@ class BalloonDataset(utils.Dataset):
             # The if condition is needed to support VIA versions 1.x and 2.x.
             polygons = [r['shape_attributes'] for r in a['regions'].values()]
             objects = [s['region_attributes'] for s in a['regions'].values()]
+              
+            num_ids = [int(n['class']) for n in objects]
             """
             num_ids = []
             for n in objects:
