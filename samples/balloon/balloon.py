@@ -126,7 +126,7 @@ class BalloonDataset(utils.Dataset):
             # The if condition is needed to support VIA versions 1.x and 2.x.
             polygons = [r['shape_attributes'] for r in a['regions'].values()]
             objects = [s['region_attributes'] for s in a['regions'].values()]
-
+            """
             num_ids = []
             for n in objects:
                 try:
@@ -136,7 +136,7 @@ class BalloonDataset(utils.Dataset):
             	          num_ids.append(2)
                 except:
             	      pass
-
+            """ 
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
