@@ -127,18 +127,18 @@ class BalloonDataset(utils.Dataset):
             polygons = [r['shape_attributes'] for r in a['regions'].values()]
             objects = [s['region_attributes'] for s in a['regions'].values()]
               
-            num_ids = [int(n['class']) for n in objects]
-            """
+            #num_ids = [int(n['class']) for n in objects]
+            
             num_ids = []
             for n in objects:
                 try:
-            	      if n['object_name']=='Scratch':
+            	      if n['class']=='1':
             	          num_ids.append(1)
-            	      elif n['object_name']=='Dent':
+            	      elif n['class']=='2':
             	          num_ids.append(2)
                 except:
             	      pass
-            """ 
+            
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
