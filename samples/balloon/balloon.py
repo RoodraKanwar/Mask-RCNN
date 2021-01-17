@@ -209,11 +209,8 @@ def train(model):
     # COCO trained weights, we don't need to train too long. Also,
     # no need to train all layers, just the heads should do it.
     print("Training network heads")
-    model.train(dataset_train, dataset_val,
-                learning_rate=config.LEARNING_RATE,
-                epochs=30,
-                layers='heads')
-
+    mean_average_precision_callback = modellib.MeanAveragePrecisionCallback(model, model_inference, dataset_val, calculate_map_at_every_X_epoch=5, verbose=1)
+    model.train(dataset_train, dataset_val,learning_rate=config.LEARNING_RATE,epochs=100,layers='heads',custom_callbacks=[mean_average_precision_callback])
 
 def color_splash(image, mask):
     """Apply color splash effect.
