@@ -210,7 +210,7 @@ def train(model):
     # no need to train all layers, just the heads should do it.
     print("Training network heads")
     model_inference = modellib.MaskRCNN(mode = "inference", config = BalloonConfig(), model_dir = "./")
-    mean_average_precision_callback = modellib.MeanAveragePrecisionCallback(model, model_inference, dataset_val, calculate_map_at_every_X_epoch=5, verbose=1)
+    mean_average_precision_callback = modellib.MeanAveragePrecisionCallback(model, model_inference, dataset_val, calculate_map_at_every_X_epoch=3, verbose=1)
     model.train(dataset_train, dataset_val,learning_rate=config.LEARNING_RATE,epochs=30,layers='heads',custom_callbacks=[mean_average_precision_callback])
 
 def color_splash(image, mask):
