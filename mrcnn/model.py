@@ -1184,7 +1184,7 @@ def mrcnn_mask_loss_graph(target_masks, target_class_ids, pred_masks):
 #  Data Generator
 ############################################################
 
-def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
+def load_image_gt(dataset, config, image_id, augment=False, augmentation=True, #None
                   use_mini_mask=False):
     """Load and return ground truth data for an image (image, mask, bounding boxes).
 
@@ -1238,7 +1238,7 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
         # test your augmentation on masks
         MASK_AUGMENTERS = ["Sequential", "SomeOf", "OneOf", "Sometimes",
                            "Fliplr", "Flipud", "CropAndPad",
-                           "Affine", "PiecewiseAffine"]
+                           "Affine", "PiecewiseAffine", "Grayscale"]
 
         def hook(images, augmenter, parents, default):
             """Determines which augmenters to apply to masks."""
