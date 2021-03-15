@@ -2868,6 +2868,7 @@ def denorm_boxes_graph(boxes, shape):
     shift = tf.constant([0., 0., 1., 1.])
     return tf.cast(tf.round(tf.multiply(boxes, scale) + shift), tf.int32)
 
+"""
 class MeanAveragePrecisionCallback(Callback):
     def __init__(self, train_model: MaskRCNN, inference_model: MaskRCNN, dataset: utils.Dataset,
                  calculate_map_at_every_X_epoch=5, dataset_limit=None,
@@ -2928,3 +2929,4 @@ class MeanAveragePrecisionCallback(Callback):
             mAPs.append(AP)
 
         return np.array(mAPs)
+	"""
